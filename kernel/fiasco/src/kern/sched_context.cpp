@@ -62,9 +62,19 @@ public:
 	_get_dead(info);
     }
 
+    void get_scheduled(int* info)
+    {
+      _get_scheduled(info);
+    }
+
     void add_dead(int id, long long unsigned time)
     {
 	_add_dead(id, time);
+    }
+
+    void add_scheduled(int id)
+    {
+	_add_scheduled(id);
     }
 
     Context *schedule_in_progress;

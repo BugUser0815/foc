@@ -31,8 +31,10 @@ private:
   unsigned prio_highest;
   List prio_next[256];
   long long unsigned dead_threads[100];
+  int scheduled_threads[100];
   int num_dead=0;
-
+  int num_scheduled=0;
+  bool scheduled_overflow=false;
 
 public:
   void set_idle(E *sc)
@@ -55,6 +57,22 @@ public:
 		info[2*i]=dead_threads[2*i-1];
 	}
   }
+  void _add_scheduled(int id) {
+	if(num_scheduled==100) 
+	{
+		num_scheduled=0;
+		scheduled_overflow=true;
+	}
+	scheduled_threads[num_scheduled]=id;
+	num_scheduled++;
+  }
+  void _get_scheduled(int* info) {
+	for(int i=0; i<100; i++)
+	{
+		info[i]=scheduled_threads[i];
+	}
+  }
+
   void enqueue(E *, bool);
   void dequeue(E *);
   E *next_to_run() const;

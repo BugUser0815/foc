@@ -17,6 +17,7 @@ public:
     Deploy_thread = 3,
     Get_rqs = 4,
     Get_dead = 5,
+    Get_scheduled = 6,
   };
 
   static Scheduler scheduler;
@@ -240,6 +241,20 @@ Scheduler::sys_get_dead(L4_fpage::Rights, Syscall_frame *f, Utcb *outcb)
 	return commit_result(0, (2*info[0])+1);
 }
 
+PRIVATE
+L4_msg_tag
+Scheduler::sys_get_scheduled(L4_fpage::Rights, Syscall_frame *f, Utcb *outcb)
+{
+	int info[100];
+	Sched_context::Ready_queue &rq = Sched_context::rq.current();
+	rq.get_scheduled(info);
+	for(int i=0; i<100; i++)
+	{
+		outcb->values[i]=info[i];
+	}
+	return commit_result(0, 100);
+}
+
 PUBLIC inline
 Irq_base *
 Scheduler::icu_get_irq(unsigned irqnum)
@@ -321,6 +336,7 @@ Scheduler::kinvoke(L4_obj_ref ref, L4_fpage::Rights rights, Syscall_frame *f,
     case Deploy_thread: return sys_deploy_thread(rights, f, iutcb);
     case Get_rqs:    return sys_get_rqs(rights, f, iutcb, outcb);
     case Get_dead:   return sys_get_dead(rights, f, outcb);
+    case Get_scheduled:   return sys_get_scheduled(rights, f, outcb);
     default:         return commit_result(-L4_err::ENosys);
     }
 }

@@ -826,6 +826,7 @@ Context::schedule()
   for (;;)
     {
       next_to_run = rq->next_to_run()->context();
+      rq->_add_scheduled(Kobject_dbg::obj_to_id(next_to_run));
 
       // Ensure ready-list sanity
       assert (next_to_run);
